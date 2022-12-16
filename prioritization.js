@@ -1,6 +1,12 @@
 import * as DB from "MicrotaskDB";
 
 function getPriority(price, payer, duration, creationTime, genre, skill) {
+    // price: the max cash reward for the task
+    // payer: the user who has created the task: a wallet address
+    // duration: the time frame during which the task can be responded to
+    // creationTime: the timestamp for the task created
+    // genre: the nature of the task, such as dev, art or influencer work
+    // skill: the degree of specialization or expertise demanded
     var priority_score = 0;
     var median_price = DB.getPriceMedian();
     if (median_price <= price/1.3) {
@@ -15,7 +21,7 @@ function getPriority(price, payer, duration, creationTime, genre, skill) {
     else {
         priority_score += 2 * 1;
     }
-
+    // Since price is a main consideration, its weight is doubled
 
     var payer_rating = DB.getPayerRating(payer);
     if (payer_rating < 1) {
@@ -33,7 +39,7 @@ function getPriority(price, payer, duration, creationTime, genre, skill) {
     else {
         priority_score += 2 * 10;
     }
-
+    // Since payer reputation is a main consideration, its weight is doubled
 
     if (duration < 1){
         priority_score += 10;
@@ -86,6 +92,7 @@ function getPriority(price, payer, duration, creationTime, genre, skill) {
         default: 
             priority_score += 2 * 3;
     }
+    // Since the nature of the work is a main consideration, its weight is doubled
 
     var ct_cluttering = DB.getCurrentCluttering();
     if (ct_cluttering > 90) {
@@ -103,6 +110,7 @@ function getPriority(price, payer, duration, creationTime, genre, skill) {
     else {
         priority_score += 10;
     }
+    // This ensures not too many tasks show up on the feed at the same time
 
     var genre_cluttering = DB.getGenreCluttering(creationTime, genre);
     if (genre_cluttering > 90) {
@@ -120,6 +128,7 @@ function getPriority(price, payer, duration, creationTime, genre, skill) {
     else {
         priority_score += 10;
     }
+    // This ensures not too many tasks of the same genre show up on the feed at the same time
 
     priority_score /= 10;
 
