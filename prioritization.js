@@ -130,7 +130,11 @@ function getPriority(price, payer, duration, creationTime, genre, skill) {
     }
     // This ensures not too many tasks of the same genre show up on the feed at the same time
 
-    priority_score /= 10;
+    var chance_factor = Math.floor(Math.random() * 10);
+    priority_score += chance_factor;
+    // This ensures an element of randomness or chance in case someone wants to discover something new
+
+    priority_score /= 11;
 
     return priority_score;
 
