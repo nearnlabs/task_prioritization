@@ -1,6 +1,6 @@
 import * as DB from "MicrotaskDB";
 
-function getPriority(price, payer, duration, creationTime, genre, skill) {
+function getPriority(price, payer, duration, creationTime, genre, skill, boosts_wanted) {
     // price: the max cash reward for the task
     // payer: the user who has created the task: a wallet address
     // duration: the time frame during which the task can be responded to
@@ -8,6 +8,14 @@ function getPriority(price, payer, duration, creationTime, genre, skill) {
     // genre: the nature of the task, such as dev, art or influencer work
     // skill: the degree of specialization or expertise demanded
     var priority_score = 0;
+    var boost_factor;
+    var boosts = DB.getBoostsRemaining(payer);
+    if (boosts < boosts_wanted){
+        boost_factor = boosts;
+    }
+    else {
+        boost_factor = boosts_wanted;
+    }
     var median_price = DB.getPriceMedian();
     if (median_price <= price/1.3) {
         priority_score += 2 * 10;
@@ -134,9 +142,11 @@ function getPriority(price, payer, duration, creationTime, genre, skill) {
     priority_score += chance_factor;
     // This ensures an element of randomness or chance in case someone wants to discover something new
 
+    priority_score = priority_score + (boost_factor*5*priority_score)/100;
     priority_score /= 11;
 
     return priority_score;
 
 
 }
+
